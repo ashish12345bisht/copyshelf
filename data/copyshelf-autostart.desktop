@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Copyshelf
+Comment=Clipboard history daemon (Super+V)
+Exec=@BIN@
+Icon=copyshelf
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

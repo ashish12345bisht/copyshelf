@@ -1,0 +1,15 @@
+{
+  "uuid": "copyshelf@ashish12345bisht.github.io",
+  "name": "Copyshelf helper",
+  "description": "Lets the Copyshelf clipboard manager paste into the focused app on Wayland.",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50"
+  ],
+  "version-name": "0.2.0",
+  "url": "https://github.com/ashish12345bisht/copyshelf"
+}

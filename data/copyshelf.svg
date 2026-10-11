@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- clipboard board -->
+  <rect x="20" y="16" width="88" height="104" rx="12" fill="#3d6fd1"/>
+  <!-- paper, with a second sheet behind it to suggest "history" -->
+  <rect x="36" y="34" width="62" height="74" rx="6" fill="#c9d8f5"/>
+  <rect x="30" y="28" width="62" height="74" rx="6" fill="#ffffff"/>
+  <!-- clip -->
+  <rect x="44" y="8" width="40" height="22" rx="6" fill="#26457f"/>
+  <rect x="54" y="13" width="20" height="8" rx="3" fill="#3d6fd1"/>
+  <!-- text lines -->
+  <rect x="40" y="46" width="42" height="7" rx="3.5" fill="#3d6fd1"/>
+  <rect x="40" y="62" width="34" height="7" rx="3.5" fill="#9bb4e6"/>
+  <rect x="40" y="78" width="38" height="7" rx="3.5" fill="#9bb4e6"/>
+</svg>

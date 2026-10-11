@@ -1,0 +1,28 @@
+name: tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        # Oldest and newest Ubuntu LTS on GitHub: Python 3.10 / GLib 2.72 and newer.
+        os: [ubuntu-22.04, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-gi gir1.2-gtk-3.0 python3-pytest xvfb
+
+      - name: Run tests (unit + end-to-end on a virtual X display)
+        run: xvfb-run -a sh -c 'COPYSHELF_TEST_DISPLAY=$DISPLAY PYTHONPATH=. python3 -m pytest -v'
+
+      - name: Check the GNOME extension's JavaScript syntax
+        run: node --check --input-type=module < gnome-extension/extension.js
+
+      - name: Check shell scripts
+        run: shellcheck install.sh uninstall.sh

@@ -1,0 +1,2 @@
+# For running the tests (Ubuntu: sudo apt install python3-pytest)
+pytest>=6.2

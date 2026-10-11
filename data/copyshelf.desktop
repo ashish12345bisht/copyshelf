@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Name=Copyshelf
+GenericName=Clipboard History
+Comment=Clipboard history: paste something you copied earlier (Super+V)
+Exec=@BIN@ --show
+Icon=copyshelf
+Terminal=false
+Categories=Utility;
+Keywords=clipboard;history;paste;copy;
+StartupNotify=false
+Actions=Settings;
+
+[Desktop Action Settings]
+Name=Settings
+Exec=@BIN@ --settings

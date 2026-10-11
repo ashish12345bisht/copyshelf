@@ -1,0 +1,12 @@
+# Copyshelf's runtime dependencies come from your distro's packages, because PyGObject
+# needs GTK's C libraries and can't easily be pip-installed:
+#   Ubuntu/Debian:  sudo apt install python3-gi gir1.2-gtk-3.0
+#   Fedora:         sudo dnf install python3-gobject gtk3
+#   Arch:           sudo pacman -S python-gobject gtk3
+#   openSUSE:       sudo zypper install python3-gobject typelib-1_0-Gtk-3_0
+PyGObject>=3.42
+
+# Optional, depending on your desktop (install.sh tells you which you need):
+#   xdotool        auto-paste on X11 sessions
+#   wl-clipboard   clipboard watching on KDE, Sway, Hyprland
+#   wtype          auto-paste on Sway, Hyprland
