@@ -59,6 +59,8 @@ offer_install() {
   if ! "${PM[@]}" "${names[@]}" <"$input"; then
     # On Debian/Ubuntu a stale package list is the usual cause; refresh it and retry once.
     [ "$PM_COL" = 1 ] || return 1
+    # The redirect is meant for sudo itself (so it can ask for a password under curl | bash).
+    # shellcheck disable=SC2024
     sudo apt-get update <"$input" && "${PM[@]}" "${names[@]}" <"$input" || return 1
   fi
 }
