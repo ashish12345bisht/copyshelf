@@ -25,7 +25,7 @@ def _load_appindicator():
 
 
 class Tray:
-    def __init__(self, on_show, on_settings, on_clear):
+    def __init__(self, on_show, on_settings, on_clear, on_check_updates):
         AppIndicator = _load_appindicator()
         if AppIndicator is None:
             log.info("No tray icon: install libayatana-appindicator (gir1.2-ayatanaappindicator3-0.1)")
@@ -37,7 +37,8 @@ class Tray:
         self.indicator.set_title("Copyshelf")
         menu = Gtk.Menu()
         for label, callback in (("Show clipboard history", on_show), ("Settings", on_settings),
-                                (None, None), ("Clear history", on_clear)):
+                                (None, None), ("Clear history", on_clear),
+                                ("Check for updates", on_check_updates)):
             item = Gtk.SeparatorMenuItem() if label is None else Gtk.MenuItem(label=label)
             if callback:
                 item.connect("activate", lambda _i, cb=callback: cb())

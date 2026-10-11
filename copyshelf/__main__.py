@@ -4,6 +4,7 @@
     copyshelf --show     open/close the popup (bind this to Super+V)
     copyshelf --settings open the settings window
     copyshelf --clear    clear the history (pinned items are kept)
+    copyshelf --check-updates  look for a new version on GitHub
     copyshelf --quit     stop the daemon
     copyshelf --uninstall  remove Copyshelf (add --purge to delete history and settings too)
 
@@ -23,6 +24,7 @@ def parse_args(argv):
     p.add_argument("--show", action="store_true", help="open or close the popup")
     p.add_argument("--settings", action="store_true", help="open the settings window")
     p.add_argument("--clear", action="store_true", help="clear the history (keeps pinned items)")
+    p.add_argument("--check-updates", action="store_true", help="check GitHub for a new version")
     p.add_argument("--quit", action="store_true", help="stop the running daemon")
     p.add_argument("--uninstall", action="store_true", help="remove Copyshelf from this computer")
     p.add_argument("--purge", action="store_true", help="with --uninstall: also delete history and settings")
@@ -59,6 +61,8 @@ def main(argv=None):
         return 0   # the running daemon opened the popup
     if args.settings and ipc.send("settings") == "ok":
         return 0
+    if args.check_updates and ipc.send("check-updates") == "ok":
+        return 0
     if args.reset_paste_permission:
         from copyshelf.paste.portal import reset_permission
         print("Forgot the saved permission." if reset_permission() else "No saved permission.")
@@ -68,7 +72,7 @@ def main(argv=None):
     from copyshelf.desktop import gdk_backend
     os.environ.setdefault("GDK_BACKEND", gdk_backend())
     from copyshelf.app import run
-    return run(show=args.show, settings=args.settings)
+    return run(show=args.show, settings=args.settings, check_updates=args.check_updates)
 
 
 if __name__ == "__main__":

@@ -9,27 +9,13 @@ If no paster works, the user gets a "Copied — press Ctrl+V" notification inste
 """
 import logging
 
-from copyshelf import APP_ID
-from copyshelf._gi import Gio, GLib
+from copyshelf.notify import notify
 
 log = logging.getLogger(__name__)
 
 
-def notify(summary, body=""):
-    """Show a desktop notification by talking to the notification service directly."""
-    try:
-        bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
-        bus.call_sync(
-            "org.freedesktop.Notifications", "/org/freedesktop/Notifications",
-            "org.freedesktop.Notifications", "Notify",
-            GLib.Variant("(susssasa{sv}i)", (APP_ID, 0, "edit-paste", summary, body, [], {}, 3000)),
-            None, Gio.DBusCallFlags.NONE, 1000, None)
-    except GLib.Error as e:
-        log.warning("Could not show notification: %s", e.message)
-
-
 def notify_copied():
-    notify("Copied to clipboard", "Press Ctrl+V to paste.")
+    notify("Copied to clipboard", "Press Ctrl+V to paste.", icon="edit-paste", timeout_ms=3000)
 
 
 def make_paster(name):

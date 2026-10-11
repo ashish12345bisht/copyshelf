@@ -25,6 +25,9 @@ const IFACE_XML = `
 <node>
   <interface name="io.github.Copyshelf">
     <method name="Paste"/>
+    <method name="GetVersion">
+      <arg type="s" direction="out" name="version"/>
+    </method>
   </interface>
 </node>`;
 
@@ -161,11 +164,18 @@ export default class CopyshelfExtension extends Extension {
             menu.addAction('Settings', () => runCopyshelf('--settings'));
             menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             menu.addAction('Clear history', () => runCopyshelf('--clear'));
+            menu.addAction('Check for updates', () => runCopyshelf('--check-updates'));
             Main.panel.addToStatusArea(this.uuid, this._indicator);
         } else if (!wanted && this._indicator) {
             this._indicator.destroy();
             this._indicator = null;
         }
+    }
+
+    // Which extension version GNOME is running. Copyshelf compares it with the installed
+    // files to tell whether a log out is needed to finish an update.
+    GetVersion() {
+        return String(this.metadata['version-name'] ?? '');
     }
 
     // Called over D-Bus by Copyshelf after it has put the chosen item on the clipboard.

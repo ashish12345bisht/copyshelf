@@ -20,6 +20,7 @@ DEFAULTS = {
     "skip_sensitive": True,   # don't record copies that password managers mark as secret
     "popup_at_pointer": True, # open the popup at the mouse pointer (else screen centre)
     "show_tray_icon": True,   # top-bar icon on GNOME, tray icon elsewhere
+    "check_updates": True,    # look for a new version on GitHub once a day
 }
 
 
@@ -33,6 +34,11 @@ def config_dir():
 
 def data_dir():
     return os.path.join(_xdg("XDG_DATA_HOME", "~/.local/share"), APP_ID)
+
+
+def state_dir():
+    """For things Copyshelf remembers that aren't settings, e.g. when it last checked for updates."""
+    return os.path.join(_xdg("XDG_STATE_HOME", "~/.local/state"), APP_ID)
 
 
 def runtime_dir():

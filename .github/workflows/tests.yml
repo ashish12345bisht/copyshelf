@@ -25,4 +25,4 @@ jobs:
         run: node --check --input-type=module < gnome-extension/extension.js
 
       - name: Check shell scripts
-        run: shellcheck install.sh uninstall.sh
+        run: shellcheck install.sh uninstall.sh get.sh release.sh

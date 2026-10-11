@@ -88,6 +88,12 @@ If you edit the file by hand, restart Copyshelf afterwards: `copyshelf --quit; c
 
 **Tray icon outside GNOME:** this needs the AppIndicator library (`gir1.2-ayatanaappindicator3-0.1` on Ubuntu/Debian). `install.sh` tells you if it's missing.
 
+## Updates
+
+When a new version comes out, Copyshelf shows a notification. Click it to see what's new, then choose **Update now**, **Remind me later** or **Skip this version**. You can also check any time from the top-bar/tray menu, from Settings, or with `copyshelf --check-updates`. Running the install command again also updates.
+
+**What the update check does:** about once a day, Copyshelf downloads public information about the latest release (version number and release notes) from `api.github.com`. Nothing about you or your clipboard is sent. This is the only time Copyshelf uses the internet. To turn it off: Settings → "Check for updates automatically".
+
 ## Commands
 
 ```
@@ -95,6 +101,7 @@ copyshelf                           start the background service (done at login 
 copyshelf --show                    open/close the popup (what Super+V runs)
 copyshelf --settings                open the settings window
 copyshelf --clear                   clear the history (pinned items are kept)
+copyshelf --check-updates           look for a new version
 copyshelf --quit                    stop the background service
 copyshelf --uninstall [--purge]     remove Copyshelf (--purge: also delete history and settings)
 copyshelf --debug                   run with detailed logs, to see what's happening
@@ -156,6 +163,12 @@ python3 -m pytest                        # unit tests
 Xwayland :87 -rootless &
 COPYSHELF_TEST_DISPLAY=:87 python3 -m pytest
 ```
+
+### Releasing a new version
+
+1. Describe the changes in [CHANGELOG.md](CHANGELOG.md) under a new `## X.Y.Z - date` heading and commit it.
+2. Run `./release.sh X.Y.Z`. It runs the tests, sets the version number, and after you confirm, tags the release and publishes it on GitHub with your changelog text as the notes.
+3. Within a day, users' Copyshelf offers them the update; new installs get it right away.
 
 To try changes without installing: `copyshelf --quit; python3 -m copyshelf --debug` from the project folder.
 

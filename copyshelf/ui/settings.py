@@ -1,5 +1,5 @@
 """The settings window. Every change is saved and applied right away."""
-from copyshelf import autostart, hotkey
+from copyshelf import __version__, autostart, hotkey
 from copyshelf._gi import Gdk, Gtk
 
 
@@ -49,6 +49,8 @@ class SettingsWindow(Gtk.Window):
              "Don't save copies that password managers mark as secret."),
             ("show_tray_icon", "Show icon in the top bar" if app.desktop.name == "gnome"
              else "Show tray icon", None),
+            ("check_updates", "Check for updates automatically",
+             "Once a day, ask GitHub if there's a new version. Nothing about you is sent."),
         ]:
             switch = Gtk.Switch()
             switch.connect("notify::active", self.on_switch, key)
@@ -75,6 +77,10 @@ class SettingsWindow(Gtk.Window):
                 "Set it in your desktop's keyboard settings, with the command:\n"
                 f"<tt>{autostart.launcher_command()} --show</tt>")
             add("Keyboard shortcut", None, self.hotkey_label)
+
+        check_now = Gtk.Button(label="Check now")
+        check_now.connect("clicked", lambda b: app.check_updates_now())
+        add("Updates", f"You have version {__version__}.", check_now)
 
         close = Gtk.Button(label="Close")
         close.connect("clicked", lambda b: self.hide())

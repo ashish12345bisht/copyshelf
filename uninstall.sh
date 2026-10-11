@@ -5,6 +5,7 @@ set -euo pipefail
 
 DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 LIB_DIR="$HOME/.local/lib/copyshelf"
 BIN="$HOME/.local/bin/copyshelf"
 EXT_UUID="copyshelf@ashish12345bisht.github.io"
@@ -55,7 +56,7 @@ fi
 
 if $purge; then
   echo "Deleting clipboard history and settings..."
-  rm -rf "$DATA_HOME/copyshelf" "$CONFIG_HOME/copyshelf"
+  rm -rf "$DATA_HOME/copyshelf" "$CONFIG_HOME/copyshelf" "$STATE_HOME/copyshelf"
 else
   echo "Kept your history ($DATA_HOME/copyshelf) and settings ($CONFIG_HOME/copyshelf)."
   echo "To delete them too:  rm -rf \"$DATA_HOME/copyshelf\" \"$CONFIG_HOME/copyshelf\""

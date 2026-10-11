@@ -2,16 +2,18 @@
 import logging
 import signal
 
-from copyshelf import config, ipc, migrate
+from copyshelf import __version__, config, ipc, migrate, updates
 from copyshelf._gi import Gdk, GLib, Gtk, unix_signal_add
 from copyshelf.clipboard import create_backend
 from copyshelf.clipboard import wl as wl_clipboard
 from copyshelf.desktop import clipboard_method, detect, paste_methods, popup_placement
 from copyshelf.history import History
+from copyshelf.notify import notify
 from copyshelf.paste import PasteManager
 from copyshelf.ui.popup import ClipWindow, install_css
 from copyshelf.ui.settings import SettingsWindow
 from copyshelf.ui.tray import Tray
+from copyshelf.ui.update_window import UpdateWindow, show_message
 
 log = logging.getLogger(__name__)
 
@@ -39,12 +41,18 @@ class App:
         self.tray = None
         if self.desktop.name != "gnome":
             self.tray = Tray(on_show=self.win.show_popup, on_settings=self.show_settings,
-                             on_clear=self.clear_history)
+                             on_clear=self.clear_history, on_check_updates=self.check_updates_now)
 
         method = clipboard_method(self.desktop, wl_clipboard.available())
         self.clipboard = None
         self.start_clipboard(method)
         self.apply_settings()
+
+        self.updates = updates.UpdateChecker(enabled=lambda: self.cfg["check_updates"],
+                                             on_found=self.offer_update)
+        self.updates.start()
+        self.update_win = None
+        self.announce_if_updated()
 
     # ----- clipboard -----
     def start_clipboard(self, method):
@@ -100,6 +108,49 @@ class App:
         self.refresh_if_visible()
         return False
 
+    # ----- updates -----
+    def offer_update(self, release):
+        """A newer version was found by the automatic check: tell the user, gently."""
+        notify(f"Copyshelf {release.version} is available",
+               "See what's new, and update if you like.",
+               actions=[("default", "See what's new"), ("show", "See what's new")],
+               on_action=lambda _key: self.show_update_window(release), timeout_ms=0)
+
+    def show_update_window(self, release):
+        if self.update_win:
+            self.update_win.destroy()
+        self.update_win = UpdateWindow(release, self.updates)
+        self.update_win.show_all()
+        self.update_win.present()
+        return False
+
+    def check_updates_now(self):
+        """'Check for updates' from the menu or Settings: always answer, even if up to date."""
+        def done(release):
+            if release is None:
+                show_message("Couldn't check for updates",
+                             "GitHub couldn't be reached. Check your internet connection.")
+            elif updates.is_newer(release.version, __version__):
+                self.show_update_window(release)
+            else:
+                show_message("Copyshelf is up to date", f"You have the latest version, {__version__}.")
+        self.updates.check(manual=True, on_done=done)
+        return False
+
+    def announce_if_updated(self):
+        """First start after an update: say so, and whether a log out is still needed."""
+        state = updates.load_state()
+        if updates.just_updated(state):
+            body = "Enjoy the new version."
+            if self.desktop.name == "gnome" and self.desktop.wayland:
+                from copyshelf.paste.gnome_extension import needs_relogin
+                if needs_relogin():
+                    body = "Log out and back in once to finish the update."
+            notify(f"Copyshelf was updated to {__version__}", body)
+        if state.get("last_run_version") != __version__:
+            state["last_run_version"] = __version__
+            updates.save_state(state)
+
     # ----- picking an item -----
     def on_pick(self, item):
         if not self.clipboard.set_item(item):
@@ -116,6 +167,8 @@ class App:
             GLib.idle_add(self.show_settings)
         elif cmd == "clear":
             GLib.idle_add(self.clear_history)
+        elif cmd == "check-updates":
+            GLib.idle_add(self.check_updates_now)
         elif cmd == "quit":
             GLib.idle_add(Gtk.main_quit)
         elif cmd != "ping":
@@ -123,7 +176,7 @@ class App:
         return "ok"
 
 
-def run(show=False, settings=False):
+def run(show=False, settings=False, check_updates=False):
     migrate.move_old_data()
     lock = ipc.acquire_instance_lock()
     if lock is None:
@@ -144,6 +197,8 @@ def run(show=False, settings=False):
         GLib.idle_add(app.win.show_popup)
     if settings:
         GLib.idle_add(app.show_settings)
+    if check_updates:
+        GLib.idle_add(app.check_updates_now)
 
     log.info("Copyshelf running. History: %s", app.history.file)
     try:
