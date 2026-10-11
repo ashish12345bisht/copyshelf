@@ -4,3 +4,10 @@ __pycache__/
 build/
 dist/
 *.egg-info/
+
+# Editor and OS leftovers
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
