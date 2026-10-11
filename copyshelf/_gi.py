@@ -16,12 +16,18 @@ try:
 except (ValueError, ImportError):   # running on native Wayland
     GdkX11 = None
 
-# GLib 2.86+ moved Unix-only APIs into GioUnix / GLibUnix and deprecated the old names.
-# Older GLib doesn't have those modules at all, and some versions in between (e.g. Ubuntu
-# 24.04) have the module but not every function in it yet. So look up each name on its own.
+# GLib 2.86 finished moving Unix-only APIs into GioUnix / GLibUnix and deprecated the old
+# names. Older GLib versions may already have those modules, but only partly working
+# (Ubuntu 24.04's GioUnix.DesktopAppInfo breaks on get_categories()). So we go by GLib's
+# version rather than by what happens to exist.
+NEW_UNIX_API = GLib.check_version(2, 86, 0) is None   # None means "at least 2.86"
+
+
 def _newest(namespace, attr, fallback):
-    """`namespace.attr` if this GLib has it, else `fallback()`. The fallback is a function so
-    the old, deprecated name is only touched when it's really needed (touching it warns)."""
+    """`namespace.attr` on GLib 2.86+, else `fallback()`. The fallback is a function so the
+    old, deprecated name is only touched when it's really needed (touching it warns)."""
+    if not NEW_UNIX_API:
+        return fallback()
     try:
         gi.require_version(namespace, "2.0")
         module = importlib.import_module(f"gi.repository.{namespace}")
